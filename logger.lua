@@ -75,36 +75,36 @@ end
 local function on_built_entity(event)
 	-- get the corresponding data
 	local player = game.get_player(event.player_index)
-	local data = global.playerstats[player.name]
+	local data = storage.playerstats[player.name]
 	if data == nil then
 		-- format of array: {entities placed, ticks played}
-		global.playerstats[player.name] = {1, 0}
+		storage.playerstats[player.name] = {1, 0}
 	else
 		data[1] = data[1] + 1 --indexes start with 1 in lua
-		global.playerstats[player.name] = data
+		storage.playerstats[player.name] = data
 	end
 end
 
 local function on_init ()
-	global.playerstats = {}
+	storage.playerstats = {}
 end
 
 local function logStats()
 	-- log built entities and playtime of players
 	for _, p in pairs(game.players)
 	do
-		local pdat = global.playerstats[p.name]
+		local pdat = storage.playerstats[p.name]
 		if (pdat == nil) then
 				-- format of array: {entities placed, ticks played}
 				pdat = {0, p.online_time}
 				log("[STATS] " .. p.name .. " " .. 0 .. " " .. p.online_time)
-				global.playerstats[p.name] = pdat
+				storage.playerstats[p.name] = pdat
 		else
 			if (pdat[1] ~= 0 or (p.online_time - pdat[2]) ~= 0) then
 				log("[STATS] " .. p.name .. " " .. pdat[1] .. " " .. (p.online_time - pdat[2]))
 			end
 			-- update the data
-			global.playerstats[p.name] = {0, p.online_time}
+			storage.playerstats[p.name] = {0, p.online_time}
 		end
 	end
 end
@@ -113,7 +113,7 @@ local function on_rocket_launched(e)
 	log("[ROCKET] " .. "ROCKET LAUNCHED")
 end
 local function checkEvolution(e)
-	log("[EVOLUTION] " .. string.format("%.4f", game.forces["enemy"].evolution_factor))
+	log("[EVOLUTION] " .. string.format("%.4f", game.forces["enemy"].get_evolution_factor())) -- get_evolution_factor might need a change in the future to support multiple planets
 end
 local function on_trigger_fired_artillery(e)
 	log("[ARTILLERY] " .. e.entity.name .. (e.source.name or "no source"))
